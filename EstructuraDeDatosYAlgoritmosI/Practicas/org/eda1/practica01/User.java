@@ -21,11 +21,8 @@ public class User {
 	}
 
 	public void clear() {
-		// Antes de llamar al metodo clear() de devices, recorreremos la estructura
-		// "vaciando" cada uno de los dispositivos
-		// ...
-		for (int i = 0; i < devices.size(); i++) {
-			devices.remove(i);
+		for (Device device : devices) {
+			device.clear();
 		}
 
 		this.devices.clear();
@@ -36,7 +33,10 @@ public class User {
 		// insertaremos los dispositivos en la estructura devices siempre y cuando no
 		// existan ya (no elementos repetidos)
 		for (Device dev : devs) {
-			// ...
+			if (!this.devices.contains(dev)) {
+				this.devices.add(dev);
+			}
+
 		}
 		return true;
 	}
@@ -97,7 +97,13 @@ public class User {
 		// En el momento en el que se se cuentre la palabra, el metodo debe devolver
 		// true inmediatamente
 		// ...
-		return devices.contains(word);
+		for (Device dev : devices) {
+			if (dev.contains(word)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public String getWords() {
