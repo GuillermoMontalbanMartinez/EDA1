@@ -29,9 +29,10 @@ public class User {
 	}
 
 	public boolean addDevices(Device... devs) {
-		// Device... equivale, internamente, a Device[] --> un array de dispositivos
-		// insertaremos los dispositivos en la estructura devices siempre y cuando no
-		// existan ya (no elementos repetidos)
+
+		if (devs == null)
+			return false;
+
 		for (Device dev : devs) {
 			if (!this.devices.contains(dev)) {
 				this.devices.add(dev);
@@ -46,28 +47,29 @@ public class User {
 	}
 
 	public boolean sendMessage(Device dev, String msg) {
-		// Una vez que comprobemos que dev existe (indexOf()) llamaremos al metodo
-		// sendMessage(msg) del Dispositivo
-		// ...
+		int index = this.devices.indexOf(dev);
+
+		if (index == -1)
+			return false;
+		this.devices.get(index).sendMessage(msg);
+
 		return true;
 	}
 
 	public boolean loadMessages(Device dev, String fileName) {
-		// insertamos las palabras contenidas en el archivo especificado en fileName en
-		// el dispositivo dev especificado
-		// como parametro de entrada
-		// La estructura de codigo para cargar datos de un archivo de texto es siempre
-		// la misma;
-		// Habra que hacer los cambios necesarios para adaptarnos a la naturaleza de los
-		// datos que contiene cada archivo
-		// El dispositivo dev debera ser un dispositivo que exista en la estructura
-		// devices
 
 		Scanner scan = null;
 		String line;
-		// ...
+		int index = this.devices.indexOf(dev);
+
+		if (index == -1)
+			return false;
+
+		if (!this.devices.contains(dev))
+			return false;
+
 		try {
-			scan = new Scanner(new File(fileName)); // Lanzara una excepcion si el archivo especificado no existe
+			scan = new Scanner(new File(fileName));
 		} catch (Exception e) {
 			return false;
 		}
@@ -75,20 +77,17 @@ public class User {
 		while (scan.hasNextLine()) {
 			line = scan.nextLine();
 			if (line.isEmpty())
-				continue; // Ignoramos las posibles lineas vacias
-			// ...
+				continue;
+			this.devices.get(index).sendMessage(line);
 		}
 		scan.close();
 		return true;
 	}
 
 	public void substitute(String word1, String word2) {
-		// Sustituimos todas las ocurrencias de word1 por word2 en todos los
-		// dispositivos del usuario
-		// Si word2 == null --> eliminamos word1
-		// haremos uso del metodo substitute(word1, word2) definido en Device
-
-		// ...
+		for (Device device : devices) {
+			device.substitute(word1, word2);
+		}
 
 	}
 
@@ -107,21 +106,30 @@ public class User {
 	}
 
 	public String getWords() {
-		// Nos devuelve el conjunto de palabras asociado a cada dispositivo
-		// Formato idDevice.- name: word1 word2 ... wordn \n
-		// 2 for()
+
 		String result = "";
-		// ...
+
+		for (Device device : devices) {
+			result += device.toString() + ": ";
+			for (String word : device) {
+				result += word.toString() + " ";
+			}
+			result += "\n";
+		}
 		return result;
 	}
 
 	public ArrayList<String> getOrderedWords() {
-		// En este caso devuelve el conjunto completo de palabras, independientemente
-		// del dispositivo
-		// Haremos uso del metodo sort() para ordenar las palabras
-		// 2 for()
 		ArrayList<String> result = new ArrayList<String>();
-		// ...
+		for (Device device : devices) {
+			for (String word : device) {
+				if (result.contains(word))
+					continue;
+				result.add(word);
+			}
+		}
+
+		result.sort(null);
 
 		return result;
 	}
